@@ -1,0 +1,4 @@
+#!/bin/bash
+cleanData.sh
+setupTests.sh TestTest
+runTestCases.sh TestTest

@@ -1,0 +1,6 @@
+<testConfig>
+	<createTenant>true</createTenant>
+	<tenant>MyTestTenant</tenant>
+	<smartURL>hadoop:9181</smartURL>
+	<testClass>org.anon.smarttest.samples.TestTest</testClass>
+</testConfig>
