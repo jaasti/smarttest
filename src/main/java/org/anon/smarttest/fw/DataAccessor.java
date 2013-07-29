@@ -80,6 +80,7 @@ public class DataAccessor implements DALConstants
             System.out.println("Hbase is at :"+config.gethMaster()+": Zookeeper at:"+config.getZkQuoram());
         }catch(Exception e)
         {
+            System.out.println("Error in creating HBase Config...");
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

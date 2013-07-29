@@ -45,7 +45,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
+import org.jruby.compiler.ir.instructions.GetClassVariableInstr;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -55,9 +57,7 @@ import java.util.logging.Logger;
 
 public class BaseTest
 {
-    String patternFile;
-    protected DataAccessor accessor;
-    
+   
     
     @Rule
         public TestWatcher testWatcher = new TestWatcher()
@@ -68,6 +68,7 @@ public class BaseTest
                 testName = description.getMethodName();
                 testCase = description.getClassName();
                 testCase = testCase.substring(testCase.lastIndexOf('.') + 1);
+                System.out.println("-----------------------------------");
                 System.out.println("Starting JUnit-test: " + testCase + " " + testName);
                 logger.info("Starting JUnit-test: " + testCase + " " + testName);
                 flowName = testCase;
@@ -84,7 +85,7 @@ public class BaseTest
 
         };
     
-    protected String event;
+    /*protected String event;
     protected String host;
     
     
@@ -96,12 +97,58 @@ public class BaseTest
     protected String testResourceLoc;
     protected String tenantName;
     
-    protected Logger logger;
+    protected Logger logger;*/
+        protected static String event;
+        protected static String host;
+        
+        
+        protected static String suiteName;
+        protected static String testCase;
+        protected static String testName;
+        
+        protected static String flowName;
+        protected static String testResourceLoc;
+        protected static String tenantName;
+        
+        protected static String patternFile;
+        protected static DataAccessor accessor;
+        
+        
+        protected static Logger logger;
     
-    
+   // @BeforeClass
+    public static void setup(String name)
+    {
+        logger = Logger.getLogger("suiteName");
+        
+        log("Settingup TestSuite...");
+        host = "localHost:9081";
+        testResourceLoc = (System.getProperty("SMARTTESTRESOURCES"));
+        if((testResourceLoc == null) || testResourceLoc.length()==0)
+        {
+            testResourceLoc = System.getenv("SMARTTESTRESOURCES");
+            if((testResourceLoc == null) || testResourceLoc.length()==0)
+            {
+                log("************ Test resources Location is not set ************");
+                logger.severe("************ Test resources Location is not set ************");
+            }
+        }
+        log("TestResources are at:"+testResourceLoc);
+        patternFile = testResourceLoc+"BasePattern.txt";
+        accessor = new DataAccessor();
+        
+        testCase = name;
+                testCase = testCase.substring(testCase.lastIndexOf('.') + 1);
+                System.out.println("---------------SETUP--------------------");
+                System.out.println("Starting JUnit-test: " + testCase);
+                logger.info("Starting JUnit-test: " + testCase);
+                flowName = testCase;
+                tenantName = testCase;
+        
+   }
     public BaseTest(String suiteName)
     {
-        host = "localHost:9081";
+        /*host = "localHost:9081";
         testResourceLoc = (System.getProperty("SMARTTESTRESOURCES"));
         if((testResourceLoc == null) || testResourceLoc.length()==0)
         {
@@ -113,9 +160,10 @@ public class BaseTest
         }
         System.out.println("TestResources are at:"+testResourceLoc);
             //testJarLoc = "/home/vjaasti/testJars/";
-        patternFile = testResourceLoc+suiteName+".txt";
+        //patternFile = testResourceLoc+suiteName+".txt";
+        patternFile = testResourceLoc+"BasePattern.txt";
         logger = Logger.getLogger("suiteName");
-        accessor = new DataAccessor();
+        accessor = new DataAccessor();*/
         
     }
     
@@ -127,7 +175,7 @@ public class BaseTest
         return gen.runLoad();
     }
     
-    public List<String> postTo(String url, String data)
+    public static List<String> postTo(String url, String data)
         throws Exception
     {
         HTTPRequestor  request = new HTTPRequestor(new String[]{url+"?"+data}, new CyclicBarrier(1), new CountDownLatch(1));
@@ -135,20 +183,20 @@ public class BaseTest
         return resp;
     }
     
-    public List<String> postTo(String host, String tenant, String flow, String event, String data)
+    public static List<String> postTo(String host, String tenant, String flow, String event, String data)
             throws Exception
     {
             String url = "http://"+host+"/"+tenant+"/"+flow+"/"+event;
             return postTo(url, data);
     }
     
-    public String getStandardJar()
+    public static String getStandardJar()
     {
         String jarName = testResourceLoc+testCase+".jar";
         return jarName;
     }
     
-    public List<String> deployStandardJar() 
+    public static List<String> deployStandardJar() 
         throws Exception
     {
        List<String> resp = postTo(host, "SmartOwner", "AdminSmartFlow", "DeployEvent", 
@@ -156,7 +204,7 @@ public class BaseTest
        return resp;
     }
     
-    public List<String> createTenantForTestCase()
+    public static List<String> createTenantForTestCase()
          throws Exception
     {
         List<String> resp = postTo(host, "SmartOwner", "AdminSmartFlow", "NewTenant", 
@@ -184,4 +232,9 @@ public class BaseTest
             return postTo(url, "{'FlowAdmin':{'___smart_action___':'lookup', '___smart_value___':'"+flowName+"'}, 'group':'"+group+"', 'size':"+size+"}");
     }
     
+    public static void log(String msg)
+    {
+        System.out.println(msg);
+        logger.info(msg);
+    }
 }

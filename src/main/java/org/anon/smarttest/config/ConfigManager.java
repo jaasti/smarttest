@@ -67,6 +67,7 @@ public class ConfigManager
                 }
             }
             String fileName = testResourceLoc+testConfigFile+".xml";
+            System.out.println("Loading test config from:"+fileName);
             InputStream str = new FileInputStream(fileName);
             JAXBContext ctx = JAXBContext.newInstance(TestConfig.class);
             Unmarshaller  unMarshall = ctx.createUnmarshaller();

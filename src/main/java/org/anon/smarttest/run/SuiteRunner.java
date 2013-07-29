@@ -41,7 +41,11 @@
 
 package org.anon.smarttest.run;
 
+import java.util.List;
+
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 public class SuiteRunner
 {
@@ -49,7 +53,20 @@ public class SuiteRunner
             throws Exception
         {
             Class testCls = this.getClass().getClassLoader().loadClass(testSuiteName);
-            JUnitCore.runClasses(testCls);
+            Result result = JUnitCore.runClasses(testCls);
+            System.out.println("*******************************************************");
+            System.out.println("Completed:"+testSuiteName);
+            long time = result.getRunTime();
+            int count = result.getRunCount();
+            int fCount = result.getFailureCount();
+            System.out.println("Time taken:"+time+"ms RunCount:"+count+" Failures:"+fCount);
+            List<Failure> failures = result.getFailures();
+            
+            for(Failure f : failures)
+            {
+                System.out.println("Failure:"+f.toString());
+            }
+            System.out.println("*******************************************************");
          }
         public static void main(String args[])
             throws Exception
@@ -57,7 +74,7 @@ public class SuiteRunner
             if(args.length < 1)
             {
                 System.out.println("*******************************************************");
-                System.out.println("Usage: java SuiteRunner <testcase>");
+                System.out.println("Usage: java SuiteRunner <testSuite>");
                 System.out.println("*******************************************************");
             }
             else
